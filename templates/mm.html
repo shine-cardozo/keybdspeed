@@ -1,0 +1,25 @@
+{% for s in value %}
+{{s}}
+{% endfor %}
+
+
+{% from "_formhelpers.html" import render_field %}
+
+{% if session['set_state'] == 0 %}
+	<form action='/' method='POST'>		
+		{{name_form.csrf_token}}
+		{{render_field(name_form.i1)}}
+		<input type='submit' value='START'>
+	</form>
+{% endif %}
+
+{% if session['set_state'] == 1 %}
+	<div>
+		Clue: {{session['set_blank']}}
+	</div>
+	<form action='/' method='POST'>
+		{{type_form.csrf_token}}
+		{{render_field(type_form.t1)}}
+		<input type='submit' value='ENTER'>
+	</form>
+{% endif %}
