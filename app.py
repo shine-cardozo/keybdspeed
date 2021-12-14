@@ -16,6 +16,7 @@ def set_vars():
     session['set_word'] = sorted(words, key=lambda k: random.random())
     session['set_state'] = 0
     session['set_ign'] = ''
+    session['set_typed'] = ''
 
 @app.route('/', methods=['GET', 'POST'])
 def hi():
@@ -29,6 +30,11 @@ def hi():
         session['set_state'] = 1
         session['set_ign'] = request.form['i1']
         return render_template('mm.html', value=session['set_word'], type_form=type_form)
+    
+    elif request.method == 'POST' and session.get('set_state') == 1:
+        session['set_state'] = 2
+        session['set_typed'] = request.form['t1']
+        return render_template('mm.html')
 
 
 if __name__ == "__main__":

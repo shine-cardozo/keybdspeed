@@ -1,7 +1,13 @@
+{% if session['set_state'] == 1 %}
 {% for s in value %}
 {{s}}
 {% endfor %}
+{% endif %}
 
+{% if session['set_state'] == 1 or session['set_state'] == 2 %}
+{{session['set_state']}}
+{{session['set_ign']}}
+{% endif %}
 
 {% from "_formhelpers.html" import render_field %}
 
@@ -15,11 +21,17 @@
 
 {% if session['set_state'] == 1 %}
 	<div>
-		Clue: {{session['set_blank']}}
+		{{session['set_blank']}}
 	</div>
 	<form action='/' method='POST'>
 		{{type_form.csrf_token}}
 		{{render_field(type_form.t1)}}
 		<input type='submit' value='ENTER'>
 	</form>
+{% endif %}
+
+{% if session['set_state'] == 2 %}
+<div>
+    <p>Done</p>
+</div>
 {% endif %}
