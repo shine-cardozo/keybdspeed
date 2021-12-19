@@ -1,37 +1,188 @@
-{% if session['set_state'] == 1 %}
-{% for s in value %}
-{{s}}
-{% endfor %}
-{% endif %}
+<head>
+	<title> The Most Difficult Typing Test </title>
+	<link type="text/css" rel="stylesheet" href="static/css/bootstrap.min.css">
+	<link rel="shortcut icon" href="static/image/favicon.ico">
+	<style>
+		table {
+			min-width: 200px;
+		}
 
-{% if session['set_state'] == 1 or session['set_state'] == 2 %}
-{{session['set_state']}}
-{{session['set_ign']}}
-{% endif %}
+		th:nth-child(odd) {
+			text-align: left;
+		}
+
+		th:nth-child(even) {
+			text-align: right;
+		}
+	</style>
+	<script>
+		window.onload = function () {
+
+			function reEnable() {
+				return true
+			}
+
+			document.onselectstart = new Function('return false')
+
+			if (window.sidebar) {
+				document.onmousedown = disableselect
+				document.onClick = reEnable
+			}
+
+			document.addEventListener("contextmenu", function (e) {
+				e.preventDefault();
+			}, false);
+
+			document.addEventListener("keydown", function (e) {
+				//document.onkeydown = function(e) {
+				// "I" key
+				if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+					disabledEvent(e);
+				}
+				// "J" key
+				if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+					disabledEvent(e);
+				}
+				// "S" key + macOS
+				if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+					disabledEvent(e);
+				}
+				// "U" key
+				if (e.ctrlKey && e.keyCode == 85) {
+					disabledEvent(e);
+				}
+				// // "F12" key
+				if (event.keyCode == 123) {
+					disabledEvent(e);
+				}
+			}, false);
+			function disabledEvent(e) {
+				if (e.stopPropagation) {
+					e.stopPropagation();
+				} else if (window.event) {
+					window.event.cancelBubble = true;
+				}
+				e.preventDefault();
+				return false;
+			}
+		}
+	</script>
+	{% if session['set_state'] == 1 %}
+	<script>
+		setTimeout(function () {
+			document.getElementById('trytype').submit();
+		}, 0.25 * 60e3);
+		function disableselect(e) {
+			return false
+		}
+	</script>
+	{% endif %}
+</head>
+
+
+
+
 
 {% from "_formhelpers.html" import render_field %}
 
-{% if session['set_state'] == 0 %}
-	<form action='/' method='POST'>		
-		{{name_form.csrf_token}}
-		{{render_field(name_form.i1)}}
-		<input type='submit' value='START'>
-	</form>
-{% endif %}
+<div class="container-lg">
+	<div class="row align-items-center text-center">
 
-{% if session['set_state'] == 1 %}
-	<div>
-		{{session['set_blank']}}
+		<!-- state 0 -->
+
+		{% if session['set_state'] == 0 %}
+		<h1> A Simple Keyboard Typing Speed Test Webapp </h1>
+		<h3> Welcome !!! Unlimited Tries !!! Multiple Entries for the same ID are allowed !!!</h3>
+		<h3>Rules</h3>
+		<strong>(◍•ᴗ•◍)❤Take your time to read the following❤(◍•ᴗ•◍)</strong>
+		<strong>Enter your 4 digit Employee code. Entries with characters will be ignored.</strong>
+		<strong>You will be given a string that is randomly generated.</strong>
+		<strong>Please type it in the exact sequence, spaces matter.</strong>
+		<strong>Press TAB key to get to the input field, can click but this way is faster.</strong>
+		<strong>After the page loads you will have a 15 second timer that will auto submit.</strong>
+		<strong>You can submit beforehand as well.</strong>
+		<strong>Please refrain from Copy Pasting.</strong>
+		<strong>Just for this game refrain from invoking your QA skills. ☜(ಠ_ಠ☜)</strong>
+		<strong><strong>Please refrain from using Postman to break it. ☜(ಠ_ಠ☜)</strong></strong>
+		<form action='/' method='POST'>
+			{{name_form.csrf_token}}
+			{{render_field(name_form.i1)}}
+			<input type='submit' value='START'>
+		</form>
+		{% endif %}
+
+
+		<div class="row align-items-center text-center">
+			<!-- state 1 -->
+			{% if session['set_state'] == 1 %}
+
+			<h1>The string you have to type is below.</h1>
+			<strong>
+				{% for s in session['set_word'] %}
+				<span>{{s}}</span>
+				{% endfor %}
+			</strong>
+			<div class="alert alert-primary" role="alert">
+				The string you have to type is above.
+			</div>
+			</br>
+
+			<div class="col-12 d-inline-block text-center m-0 mx-auto">
+				<div class="alert alert-warning text-center col-6 m-0 mx-auto" role="alert">
+					Current Player Id: {{session['set_ign']}}
+				</div>
+			</div>
+			<form action='/' method='POST' id='trytype'>
+				{{type_form.csrf_token}}
+				{{render_field(type_form.t1)}}
+				<input type='submit' value='ENTER'>
+			</form>
+			{% endif %}
+		</div>
+
+		<div class="row align-items-center text-center">
+			<div class="row align-items-center text-center">
+
+				{% if session['set_state'] == 2 %}
+
+				<div class="col-12 d-inline-block text-center m-0 mx-auto">
+					<div class="alert alert-primary text-center col-6 m-0 mx-auto" role="alert">
+						<strong>Current Player Id:</strong> {{session['set_ign']}}
+					</div>
+				</div>
+				<div class="col-12 d-inline-block text-center m-0 mx-auto">
+					<div class="alert alert-success text-center col-6 m-0 mx-auto" role="alert">
+						<h3>Result:</h3> {{cr_count|safe}}
+					</div>
+				</div>
+				<div>
+					</br>
+					</br>
+					<h2>(•̀ᴗ•́)وRefresh to play again till you win.</h2>
+					</br>
+					</br>
+				</div>
+
+				<div>
+					<h1>LeaderBoard</h1>
+					<div class="col-12 d-inline-block text-center m-0 mx-auto">
+						<table class="text-center col-6 m-0 mx-auto">
+							<th>
+								Name
+							</th>
+							<th>
+								Score
+							</th>
+							{% for score in scores %}
+							<tr>
+								<td style="text-align: left">{{score.ign}}</td>
+								<td style="text-align: right">{{score.sc}}</td>
+							</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+				{% endif %}
+			</div>
+		</div>
 	</div>
-	<form action='/' method='POST'>
-		{{type_form.csrf_token}}
-		{{render_field(type_form.t1)}}
-		<input type='submit' value='ENTER'>
-	</form>
-{% endif %}
-
-{% if session['set_state'] == 2 %}
-<div>
-    <p>Done</p>
-</div>
-{% endif %}
